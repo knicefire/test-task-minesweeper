@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Bomber</title>
+    </head>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+
+        #game {
+            flex-grow: 1;
+        }
+
+        table td {
+            cursor: pointer;
+            height: 50px;
+            width: 50px;
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid black;
+        }
+
+        td.closed {
+            background: black;
+        }
+
+    </style>
+    <script src="./bomber.js"></script>
+    <body>
+        <div id="stats"></div>
+        <div id="message"></div>
+        <div id="game"></div>
+    </body>
+    <script>
+        const game = new Game({x: 5, y: 5});
+        const gameContainer = document.getElementById('game');
+        const messageContainer = document.getElementById('message');
+        const statsContainer = document.getElementById('stats');
+
+        game.print = function() {
+            const table = this.field.rows.map((row, rIdx) => {
+                col = row.map((col, cIdx) => `<td data-position="${rIdx} ${cIdx}" class="${col.isOpen ?  'open' : 'closed'}">${col}</td>`).join('');
+                return `<tr>${col}</tr>`
+            }).join('');
+
+            gameContainer.innerHTML = `<table>${table}</table>`;
+            messageContainer.innerHTML = `<h2>${game.message}</h2>`
+            statsContainer.innerHTML = `<h3>Bombs: ${game.bombsNumber} Opened: ${game.nOpenedCells} / ${game.nCells}</h3>`
+        }
+
+        gameContainer.addEventListener('click', (e) => {
+            const el = e.target;
+            if (el.tagName == 'TD') {
+                const position = el.getAttribute('data-position');
+                const coords = position.split(' ');
+
+                const x = +coords[0];
+                const y = +coords[1];
+
+                game.openCell(x, y);
+            }
+        });
+
+        game.start();
+
+    </script>
+</html>
